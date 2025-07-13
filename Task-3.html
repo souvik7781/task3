@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task-3</title>
+  <link rel="stylesheet" href="style3.css">
+</head>
+<body>
+  <h1 class="slide-in">Welcome</h1>
+  <nav class="fade-in">
+    <a href="#Quiz">Javascript Quiz</a>
+    <a href="#Joke">Random Jokes</a>
+  </nav>
+
+  <div class="container" id="Quiz">
+    <h2 id="question">Loading...</h2>
+    <div id="options"></div>
+    <p id="feedback"></p>
+  </div>
+
+  <div id="Joke" style="margin-top: 50px;">
+    <h2>Wanna hear a joke?</h2>
+    <button onclick="getJoke()">Get a Random Joke</button>
+    <p id="jokeText" style="font-size: 18px; margin-top: 20px;"></p>
+  </div>
+   <script>
+    const quizData = [
+      {
+        question: "What is the correct way to declare a variable in Javascript?",
+        options: ["var myvar=10;", "let myvar=10;", "const myvar=10;", "All of the above"],
+        correct: "All of the above"
+      },
+      {
+        question: "What does '===' mean in JavaScript?",
+        options: ["Equal to", "Strict equal (value + type)", "Assignment", "Compare"],
+        correct: "Strict equal (value + type)"
+      },
+      {
+        question: "What is the output of typeof 123?",
+        options: ["int", "number", "string", "value"],
+        correct: "number"
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function showQuestion() {
+      const q = quizData[current];
+      document.getElementById("question").textContent = q.question;
+      const answerBox = document.getElementById("options");
+      answerBox.innerHTML = "";
+      q.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.textContent = option;
+        btn.onclick = () => checkAnswer(option);
+        answerBox.appendChild(btn);
+      });
+      document.getElementById("feedback").textContent = "";
+    }
+
+    function checkAnswer(selected) {
+      const correct = quizData[current].correct;
+      const feedback = document.getElementById("feedback");
+      if (selected === correct) {
+        score++;
+        feedback.textContent = "✅ Correct!";
+        feedback.style.color = "green";
+      } else {
+        feedback.textContent = `❌ Wrong! Correct answer: ${correct}`;
+        feedback.style.color = "red";
+      }
+
+      setTimeout(() => {
+        current++;
+        if (current < quizData.length) {
+          showQuestion();
+        } else {
+          endQuiz();
+        }
+      }, 1000);
+    }
+
+    function endQuiz() {
+      document.getElementById("question").textContent = "🎉 Quiz Completed!";
+      document.getElementById("options").innerHTML = "";
+      document.getElementById("feedback").textContent = `Your Score: ${score} / ${quizData.length}`;
+      document.getElementById("feedback").style.color = "black";
+    }
+
+    async function getJoke() {
+      try {
+        const res = await fetch('https://official-joke-api.appspot.com/jokes/random');
+        const data = await res.json();
+        document.getElementById("jokeText").textContent = `${data.setup} — ${data.punchline}`;
+      } catch (error) {
+        document.getElementById("jokeText").textContent = "Oops! Couldn't fetch a joke.";
+      }
+    }
+
+    showQuestion();
+  </script>
+</body>
+</html>
